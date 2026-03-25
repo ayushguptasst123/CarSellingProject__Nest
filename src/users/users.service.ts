@@ -30,7 +30,25 @@ export class UsersService {
     return user;
   }
 
-  udapte() {}
+  async update(id: number, attrs: Partial<User>) {
+    const user = await this.findOne(id);
+    if (!user)
+      throw new NotFoundException(`User with user-id: ${id} not found`);
 
-  remove() {}
+    Object.assign(user, attrs);
+    return this.repo.save(user);
+  }
+
+  /**
+   * remove(Entity) : It take entity to delete
+   * delete(id)     : It take id to delete the data from db
+   * -> side effect of delete(id) is it can't invoke hooks
+   */
+  async remove(id: number) {
+    const user = await this.findOne(id);
+    if (!user)
+      throw new NotFoundException(`User with user-id: ${id} not found`);
+
+    return this.repo.remove(user);
+  }
 }
