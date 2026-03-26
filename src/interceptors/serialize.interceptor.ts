@@ -7,7 +7,12 @@ import {
 import { plainToClass } from 'class-transformer';
 import { map, Observable } from 'rxjs';
 
-export function Serialize(dto: any) {
+// This is the helper method to restrict user to enter only class value to the param
+interface ClassConstructor {
+  new (...args: any[]): {};
+}
+
+export function Serialize(dto: ClassConstructor) {
   return UseInterceptors(new SerializerInterceptor(dto));
 }
 
