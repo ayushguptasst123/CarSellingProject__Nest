@@ -6,13 +6,14 @@ import {
 import { UsersService } from './users.service';
 import { promisify } from 'util';
 import { randomBytes, scrypt as _scrypt } from 'crypto';
+import { Gender } from './user.entity';
 
 const scrypt = promisify(_scrypt);
 @Injectable()
 export class AuthService {
   constructor(private userService: UsersService) {}
 
-  async signup(email: string, password: string) {
+  async signup(email: string, password: string, gender: Gender) {
     /**
      * 1. Check email in use or not
      * 2. Hash the password
@@ -32,7 +33,7 @@ export class AuthService {
     const passwordResult = salt + '.' + hash.toString('hex');
     console.log(passwordResult);
 
-    const user = await this.userService.create(email, passwordResult);
+    const user = await this.userService.create(email, passwordResult, gender);
     return user;
   }
 

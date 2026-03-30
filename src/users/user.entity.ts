@@ -7,6 +7,12 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
+export enum Gender {
+  MALE,
+  FEMALE,
+  TRANS,
+}
+
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
@@ -17,6 +23,9 @@ export class User {
 
   @Column()
   password: string;
+
+  @Column({ default: 'MALE' })
+  gender: Gender;
 
   // This is hook decorator
   @AfterInsert()
