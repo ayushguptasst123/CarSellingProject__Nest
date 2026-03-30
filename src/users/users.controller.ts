@@ -8,12 +8,13 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { CreateUserDto } from './dtos/create-user-dto';
+import { CreateUserDto } from './dtos/create.user.dto';
 import { UsersService } from './users.service';
-import { UpdateUserDto } from './dtos/update-user-dto';
+import { UpdateUserDto } from './dtos/update.user.dto';
 import { Serialize } from 'src/interceptors/serialize.interceptor';
 import { UserDto } from './dtos/user.dto';
 import { AuthService } from './auth.service';
+import { SigninDto } from './dtos/signin.dto';
 
 @Serialize(UserDto)
 @Controller('auth')
@@ -43,7 +44,7 @@ export class UsersController {
   }
 
   @Post('/signin')
-  verifyUser(@Body() body: CreateUserDto) {
+  verifyUser(@Body() body: SigninDto) {
     console.log(body);
     return this.authService.signin(body.email, body.password);
   }
