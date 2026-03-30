@@ -8,6 +8,6 @@ export class CreateUserDto {
   @IsString()
   password: string;
 
-  @IsEnum(Gender)
+  @IsEnum(Gender, { message: 'Please select Properly' })
   gender: Gender;
 }

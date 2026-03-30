@@ -17,7 +17,7 @@ export class UsersService {
     return this.repo.save(user);
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const user = await this.repo.findOneBy({ id });
     if (!user)
       throw new NotFoundException(`User with user-id: ${id} not found`);
@@ -35,7 +35,7 @@ export class UsersService {
     return user;
   }
 
-  async update(id: number, attrs: Partial<User>) {
+  async update(id: string, attrs: Partial<User>) {
     const user = await this.findOne(id);
     if (!user)
       throw new NotFoundException(`User with user-id: ${id} not found`);
@@ -49,7 +49,7 @@ export class UsersService {
    * delete(id)     : It take id to delete the data from db
    * -> side effect of delete(id) is it can't invoke hooks
    */
-  async remove(id: number) {
+  async remove(id: string) {
     const user = await this.findOne(id);
     if (!user)
       throw new NotFoundException(`User with user-id: ${id} not found`);

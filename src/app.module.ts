@@ -13,7 +13,8 @@ import { ReportEntity } from './reports/report.entity';
     ReportsModule,
     TypeOrmModule.forRoot({
       type: 'sqlite',
-      database: 'db.sqlite', //db name
+      // database: process.env.databaseName, //db name
+      database: 'db.sqlite',
       entities: [User, ReportEntity],
       synchronize: true,
     }),
