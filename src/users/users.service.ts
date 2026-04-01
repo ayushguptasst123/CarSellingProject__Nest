@@ -11,8 +11,15 @@ export class UsersService {
   ) {}
 
   create(email: string, password: string) {
+    // This execute the Hooks
     const user = this.repo.create({ email, password });
-
+    console.log('------- Line Break Here -------');
     return this.repo.save(user);
+
+    /*
+    This works, but it doesn’t fix the bug since lifecycle hooks are not executed
+
+    return this.repo.save({ email, password });
+    */
   }
 }
