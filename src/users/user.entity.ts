@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import {
   AfterInsert,
   AfterRemove,
@@ -18,19 +19,20 @@ export class User {
   email: string;
 
   @Column()
+  @Exclude()
   password: string;
 
   @CreateDateColumn()
   createdAt: Date;
 
-  @AfterInsert()
-  logInsert() {
-    console.log(`Inserted User with id: ${this.id}`);
-  }
-
   @BeforeInsert()
   logBeforeInsert() {
-    console.log(`Before Inserted User `);
+    console.log(`Before Inserted password is ${this.password} `);
+  }
+
+  @AfterInsert()
+  logInsert() {
+    console.log(`After Inserted password is ${this.password} `);
   }
 
   @AfterUpdate()
