@@ -13,7 +13,6 @@ export class UsersService {
   async create(email: string, password: string) {
     // This execute the Hooks
     const user = this.repo.create({ email, password });
-    console.log('------- Line Break Here -------');
     const fetchedUser = await this.repo.save(user);
     return fetchedUser;
 
