@@ -28,6 +28,11 @@ export class UsersController {
     return this.authService.signUp(body.email, body.password);
   }
 
+  @Post('/signin')
+  returnUser(@Body() body: CreateUserDto) {
+    return this.authService.signIn(body.email, body.password);
+  }
+
   @Get(':id')
   findOneUser(@Param('id') id: string) {
     console.log('Handler is running');
