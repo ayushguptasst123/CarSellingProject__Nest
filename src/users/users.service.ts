@@ -14,7 +14,7 @@ export class UsersService {
     // This execute the Hooks
     const user = this.repo.create({ email, password });
     console.log('------- Line Break Here -------');
-    const fetchedUser = await this.repo.insert(user);
+    const fetchedUser = await this.repo.save(user);
     return fetchedUser;
 
     /*
