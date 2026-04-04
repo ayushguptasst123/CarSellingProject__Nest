@@ -18,9 +18,7 @@ export class UsersService {
 
     /*
     This works, but it doesn’t fix the bug since lifecycle hooks are not executed
-
     return this.repo.save({ email, password });
-
     */
   }
 
@@ -35,13 +33,13 @@ export class UsersService {
     return this.repo.find({ where: { email } });
   }
 
-  // Partial<> is used to make field optional in this case `User` and assign to attributes
-  async update(id: number, attributes: Partial<User>) {
+  // Partial<> is used to make field optional in this case `User` and assign to updateUserDto
+  async update(id: number, updateUserDto: Partial<User>) {
     const user = await this.findOne(id);
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    Object.assign(user, attributes);
+    Object.assign(user, updateUserDto);
     return this.repo.save(user);
   }
 

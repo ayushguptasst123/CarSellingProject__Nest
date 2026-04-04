@@ -24,13 +24,13 @@ export class UsersController {
   ) {}
 
   @Post('/signup')
-  createUser(@Body() body: CreateUserDto) {
-    return this.authService.signUp(body.email, body.password);
+  createUser(@Body() createUserDto: CreateUserDto) {
+    return this.authService.signUp(createUserDto.email, createUserDto.password);
   }
 
   @Post('/signin')
-  returnUser(@Body() body: CreateUserDto) {
-    return this.authService.signIn(body.email, body.password);
+  signIn(@Body() createUserDto: CreateUserDto) {
+    return this.authService.signIn(createUserDto.email, createUserDto.password);
   }
 
   @Get(':id')
@@ -45,8 +45,8 @@ export class UsersController {
   }
 
   @Patch('/:id')
-  updateUser(@Param('id') id: string, @Body() body: UpdateUserDto) {
-    return this.usersService.update(parseInt(id), body);
+  updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.update(parseInt(id), updateUserDto);
   }
 
   @Delete(':id')
