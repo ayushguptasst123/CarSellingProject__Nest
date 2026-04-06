@@ -16,9 +16,6 @@ import { Serialize } from 'src/interceptors/serialize.interceptor';
 import { UserDto } from './dtos/user.dto';
 import { AuthService } from './auth.service';
 
-interface AppSession {
-  color?: string;
-}
 @Controller('auth')
 @Serialize(UserDto)
 export class UsersController {
@@ -28,23 +25,42 @@ export class UsersController {
   ) {}
 
   @Get('/colors/:color')
-  setColor(@Param('color') color: string, @Session() session: AppSession) {
+  setColor(@Param('color') color: string, @Session() session: any) {
     session.color = color;
   }
 
   @Get('/colors')
-  getColor(@Session() session: AppSession) {
+  getColor(@Session() session: any) {
     return session.color;
   }
 
+  @Get('/whoami')
+  whoAmI(@Session() session: any) {
+    return this.usersService.findOne(session.userId);
+  }
+
   @Post('/signup')
-  createUser(@Body() createUserDto: CreateUserDto) {
-    return this.authService.signUp(createUserDto.email, createUserDto.password);
+  async createUser(
+    @Body() createUserDto: CreateUserDto,
+    @Session() session: any,
+  ) {
+    const user = await this.authService.signUp(
+      createUserDto.email,
+      createUserDto.password,
+    );
+
+    session.userId = user.id;
+    return user;
   }
 
   @Post('/signin')
-  signIn(@Body() createUserDto: CreateUserDto) {
-    return this.authService.signIn(createUserDto.email, createUserDto.password);
+  async signIn(@Body() createUserDto: CreateUserDto, @Session() session: any) {
+    const user = await this.authService.signIn(
+      createUserDto.email,
+      createUserDto.password,
+    );
+    session.userId = user.id;
+    return user;
   }
 
   @Get(':id')
