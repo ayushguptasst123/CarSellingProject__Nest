@@ -63,6 +63,11 @@ export class UsersController {
     return user;
   }
 
+  @Post('signout')
+  signOut(@Session() session: any) {
+    session.userId = null;
+  }
+
   @Get(':id')
   findOneUser(@Param('id') id: string) {
     console.log('Handler is running');
