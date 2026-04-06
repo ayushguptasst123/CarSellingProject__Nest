@@ -6,6 +6,7 @@ import {
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UpdateUserDto } from './dtos/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -36,6 +37,14 @@ export class UsersService {
 
   find(email: string) {
     return this.repo.find({ where: { email } });
+  }
+
+  modifyViaLogin(user: User, updateUserDto: UpdateUserDto) {
+    if (updateUserDto.email) {
+      user.email = updateUserDto.email;
+    }
+
+    return this.repo.save(user);
   }
 
   // Partial<> is used to make field optional in this case `User` and assign to updateUserDto

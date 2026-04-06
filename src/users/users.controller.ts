@@ -8,6 +8,7 @@ import {
   Post,
   Query,
   Session,
+  UseInterceptors,
 } from '@nestjs/common';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UsersService } from './users.service';
@@ -15,9 +16,14 @@ import { UpdateUserDto } from './dtos/update-user.dto';
 import { Serialize } from 'src/interceptors/serialize.interceptor';
 import { UserDto } from './dtos/user.dto';
 import { AuthService } from './auth.service';
+import { CurrentUser } from './decorators/current-user.decorator';
+import { request } from 'http';
+import { CurrentUserInterceptor } from './interceptors/current-user.interceptor';
+import { User } from './user.entity';
 
 @Controller('auth')
 @Serialize(UserDto)
+@UseInterceptors(CurrentUserInterceptor)
 export class UsersController {
   constructor(
     private usersService: UsersService,
@@ -34,9 +40,20 @@ export class UsersController {
     return session.color;
   }
 
-  @Get('/whoami')
-  whoAmI(@Session() session: any) {
-    return this.usersService.findOne(session.userId);
+  // @Get('/whoami')
+  // whoAmI(@Session() session: any) {
+  //   return this.usersService.findOne(session.userId);
+  // }
+
+  @Get('whoami')
+  whoAmI(@CurrentUser() user: User) {
+    console.log('You hit me');
+    return user;
+  }
+
+  @Patch()
+  modifyUser(@CurrentUser() user: User, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.modifyViaLogin(user, updateUserDto);
   }
 
   @Post('/signup')
@@ -55,6 +72,7 @@ export class UsersController {
 
   @Post('/signin')
   async signIn(@Body() createUserDto: CreateUserDto, @Session() session: any) {
+    console.log('COntroller');
     const user = await this.authService.signIn(
       createUserDto.email,
       createUserDto.password,
