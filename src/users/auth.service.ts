@@ -52,9 +52,3 @@ export class AuthService {
     return user;
   }
 }
-/*
-this is salt:  65589c798f3b4cfd
-This is Hashed password before adding salt:  <Buffer 54 a1 71 0f 06 11 0d 94 3a 23 07 fc f0 1a 5b 15 88 e0 da c4 21 3d 4d 
-26 2f aa 54 6f 0c 91 90 28>
-Salt + Password  65589c798f3b4cfd.54a1710f06110d943a2307fcf01a5b1588e0dac4213d4d262faa546f0c919028
-*/
