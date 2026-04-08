@@ -19,6 +19,11 @@ import { AuthService } from './auth.service';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { User } from './user.entity';
 import { AuthGuard } from 'src/guards/auth.guard';
+import { Request } from 'express';
+
+interface UserCreation extends Request {
+  userId?: number;
+}
 
 @Controller('auth')
 @Serialize(UserDto)
@@ -28,15 +33,15 @@ export class UsersController {
     private authService: AuthService,
   ) {}
 
-  @Get('/colors/:color')
-  setColor(@Param('color') color: string, @Session() session: any) {
-    session.color = color;
-  }
+  // @Get('/colors/:color')
+  // setColor(@Param('color') color: string, @Session() session: any) {
+  //   session.color = color;
+  // }
 
-  @Get('/colors')
-  getColor(@Session() session: any) {
-    return session.color;
-  }
+  // @Get('/colors')
+  // getColor(@Session() session: any) {
+  //   return session.color;
+  // }
 
   // @Get('/whoami')
   // whoAmI(@Session() session: any) {
@@ -46,7 +51,6 @@ export class UsersController {
   @Get('whoami')
   @UseGuards(AuthGuard)
   whoAmI(@CurrentUser() user: User) {
-    console.log('You hit me');
     return user;
   }
 
@@ -58,7 +62,7 @@ export class UsersController {
   @Post('/signup')
   async createUser(
     @Body() createUserDto: CreateUserDto,
-    @Session() session: any,
+    @Session() session: UserCreation,
   ) {
     const user = await this.authService.signUp(
       createUserDto.email,
@@ -70,7 +74,10 @@ export class UsersController {
   }
 
   @Post('/signin')
-  async signIn(@Body() createUserDto: CreateUserDto, @Session() session: any) {
+  async signIn(
+    @Body() createUserDto: CreateUserDto,
+    @Session() session: UserCreation,
+  ) {
     console.log('COntroller');
     const user = await this.authService.signIn(
       createUserDto.email,
@@ -81,8 +88,8 @@ export class UsersController {
   }
 
   @Post('signout')
-  signOut(@Session() session: any) {
-    session.userId = null;
+  signOut(@Session() session: UserCreation) {
+    session.userId = undefined;
   }
 
   @Get(':id')

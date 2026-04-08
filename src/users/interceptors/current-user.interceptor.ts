@@ -4,13 +4,8 @@ import {
   Injectable,
   NestInterceptor,
 } from '@nestjs/common';
-import { Request } from 'express';
 import { UsersService } from '../users.service';
-import { User } from '../user.entity';
-
-interface CustomRequest extends Request {
-  currentUser?: User;
-}
+import { CustomRequest } from '../decorators/current-user.decorator';
 
 @Injectable()
 export class CurrentUserInterceptor implements NestInterceptor {
