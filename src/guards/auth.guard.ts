@@ -1,4 +1,8 @@
-import { CanActivate, ExecutionContext } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Request } from 'express';
 
 export class AuthGuard implements CanActivate {
@@ -6,7 +10,7 @@ export class AuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<Request>();
 
     if (!request.session || !request.session.userId) {
-      return false;
+      throw new UnauthorizedException();
     }
 
     return true;
