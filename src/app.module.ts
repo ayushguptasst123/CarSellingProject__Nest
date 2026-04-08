@@ -14,6 +14,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     ReportsModule,
     ConfigModule.forRoot({
       isGlobal: true, // Give access of `.env` to all file present in this project
+
       // npm install cross-env
       envFilePath: `.env.${process.env.NODE_ENV}`,
       // If we are in development evn then `NODE_ENV` point to development
@@ -34,7 +35,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       },
     }),
 
-    /*
+    /*==== NOTICE THE `ASYNC`/* ====
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: 'db.sqlite',
