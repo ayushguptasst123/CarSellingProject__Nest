@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   Param,
   Patch,
   Post,
@@ -74,6 +75,7 @@ export class UsersController {
   }
 
   @Post('/signin')
+  @HttpCode(200)
   async signIn(
     @Body() createUserDto: CreateUserDto,
     @Session() session: UserCreation,
