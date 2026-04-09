@@ -78,7 +78,6 @@ export class UsersController {
     @Body() createUserDto: CreateUserDto,
     @Session() session: UserCreation,
   ) {
-    console.log('COntroller');
     const user = await this.authService.signIn(
       createUserDto.email,
       createUserDto.password,
