@@ -3,7 +3,7 @@ import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Report {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
@@ -11,6 +11,9 @@ export class Report {
 
   @Column()
   make: string;
+
+  @Column({ default: false })
+  approved: boolean;
 
   @Column()
   model: string;
