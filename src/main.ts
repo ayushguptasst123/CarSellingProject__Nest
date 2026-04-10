@@ -11,6 +11,7 @@ async function bootstrap() {
       keys: ['92fae62d378f509b'],
     }),
   );
+  // app.use(CurrentUserMiddleware)
 
   app.useGlobalPipes(
     new ValidationPipe({
