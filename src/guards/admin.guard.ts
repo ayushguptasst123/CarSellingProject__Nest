@@ -3,11 +3,11 @@ import {
   ExecutionContext,
   UnauthorizedException,
 } from '@nestjs/common';
-import { CustomRequest } from '../users/decorators/current-user.decorator';
+import { Request } from 'express';
 
 export class AdminGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
-    const request = context.switchToHttp().getRequest<CustomRequest>();
+    const request = context.switchToHttp().getRequest<Request>();
 
     if (!request.currentUser)
       throw new UnauthorizedException('Please Login Again');
