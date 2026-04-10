@@ -10,7 +10,7 @@ export class AuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<Request>();
 
     if (!request.session || !request.session.userId) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Please Login Again');
     }
 
     return true;
