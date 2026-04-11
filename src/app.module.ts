@@ -4,7 +4,6 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { ReportsModule } from './reports/reports.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './users/user.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Report } from './reports/report.entity';
 // import { ConfigModule } from '@nestjs/config';
@@ -30,8 +29,9 @@ import { Report } from './reports/report.entity';
         return {
           type: 'sqlite',
           database: config.get<string>('DB_NAME'),
-          synchronize: true,
-          entities: [User, Report],
+          synchronize: false,
+          autoLoadEntities: true,
+          // entities: [User, Report], //AUTOLOAD:true will automatically fetch db
         };
       },
     }),

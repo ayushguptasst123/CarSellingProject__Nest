@@ -17,7 +17,7 @@ export class UsersService {
 
   async create(email: string, password: string) {
     // This execute the Hooks
-    const user = this.repo.create({ email, password });
+    const user = this.repo.create({ email: email, password: password });
     const fetchedUser = await this.repo.save(user);
     return fetchedUser;
 
@@ -36,7 +36,7 @@ export class UsersService {
   }
 
   find(email: string) {
-    return this.repo.find({ where: { email } });
+    return this.repo.find({ where: { email: email } });
   }
 
   modifyViaLogin(user: User, updateUserDto: UpdateUserDto) {
@@ -68,7 +68,7 @@ export class UsersService {
 
   // Delete is designed to work with just a plain ID or some kind of search criteria.
   async delete(email: string) {
-    const user = await this.repo.delete({ email });
+    const user = await this.repo.delete({ email: email });
     // const user = await this.repo.delete({ id: Between(10, 20) });
     // const user = await this.repo.delete(email);
     console.log(user, email);
