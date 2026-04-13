@@ -20,7 +20,7 @@ export class VehiclesService {
       sortableColumns: ['year', 'make', 'price'],
       // Only given column will be search
       searchableColumns: ['make', 'color', 'isSold'],
-      select: ['make', 'color', 'isSold', 'price'],
+      select: ['id', 'make', 'year', 'color', 'isSold', 'price'],
 
       //   nullSort: 'last',
       //   defaultSortBy: [['id', 'DESC']],
