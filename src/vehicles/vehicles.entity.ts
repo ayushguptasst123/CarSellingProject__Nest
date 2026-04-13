@@ -24,7 +24,7 @@ export class Vehicle {
   price: number;
 
   @Column({ default: false })
-  isSold: boolean;
+  isAvailable: boolean;
 
   @CreateDateColumn()
   createdAt: Date;

@@ -15,5 +15,5 @@ export class CreateVehicleDto {
 
   @IsBoolean()
   @IsOptional()
-  isSold?: boolean;
+  isAvailable?: boolean;
 }

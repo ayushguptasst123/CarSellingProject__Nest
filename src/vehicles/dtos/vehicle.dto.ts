@@ -17,5 +17,5 @@ export class VehicleDto {
   price: number;
 
   @Expose()
-  isSold?: boolean;
+  isAvailable?: boolean;
 }

@@ -17,10 +17,11 @@ export class VehiclesService {
   async showAll(query: PaginateQuery) {
     const data = await paginate(query, this.repo, {
       // Only given column will be sorted
+
       sortableColumns: ['year', 'make', 'price'],
       // Only given column will be search
-      searchableColumns: ['make', 'color', 'isSold'],
-      select: ['id', 'make', 'year', 'color', 'isSold', 'price'],
+      searchableColumns: ['make', 'color'],
+      select: ['id', 'make', 'year', 'color', 'isAvailable', 'price'],
 
       //   nullSort: 'last',
       //   defaultSortBy: [['id', 'DESC']],
