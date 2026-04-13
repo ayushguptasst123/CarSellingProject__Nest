@@ -6,6 +6,7 @@ import { ReportsModule } from './reports/reports.module';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { dataSourceOptions } from './database/data-source';
+import { VehiclesModule } from './vehicles/vehicles.module';
 
 @Module({
   imports: [
@@ -29,6 +30,8 @@ import { dataSourceOptions } from './database/data-source';
           autoLoadEntities: true,
         }) as TypeOrmModuleOptions,
     }),
+
+    VehiclesModule,
 
     /*==== NOTICE THE `ASYNC`/* ====
     TypeOrmModule.forRoot({
