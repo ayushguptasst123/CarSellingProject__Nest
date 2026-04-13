@@ -2,6 +2,9 @@ import { Expose } from 'class-transformer';
 
 export class VehicleDto {
   @Expose()
+  id: number;
+
+  @Expose()
   make: string;
 
   @Expose()

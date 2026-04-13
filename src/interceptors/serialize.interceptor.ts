@@ -30,12 +30,31 @@ class SerializeInterceptor implements NestInterceptor {
         console.log(`Running before the response send back`);
         const response = context.switchToHttp().getResponse<Response>();
 
+        // Handle pagination response structure
+        if (
+          data &&
+          typeof data === 'object' &&
+          'data' in data &&
+          Array.isArray(data.data)
+        ) {
+          return {
+            success: true,
+            statuCode: response.statusCode.toString(),
+            payload: {
+              ...data,
+              data: plainToInstance(this.dto, data.data, {
+                excludeExtraneousValues: true,
+              }),
+            },
+          };
+        }
+
+        // Handle single object or array response
         return {
           success: true,
           statusCode: response.statusCode.toString(),
           payload: plainToInstance(this.dto, data, {
             excludeExtraneousValues: true,
-            //If we don't use `excludeExtraneousValues` then it can't transform to the given dto
           }),
         };
       }),
