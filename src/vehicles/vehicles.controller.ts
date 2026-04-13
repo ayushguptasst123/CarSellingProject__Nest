@@ -1,6 +1,8 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { VehiclesService } from './vehicles.service';
 import { CreateVehicleDto } from './dtos/create-vehicle.dto';
+import { Paginate } from 'nestjs-paginate';
+import type { PaginateQuery } from 'nestjs-paginate';
 
 @Controller('vehicles')
 export class VehiclesController {
@@ -9,5 +11,10 @@ export class VehiclesController {
   @Post()
   createVehicle(@Body() body: CreateVehicleDto) {
     return this.vehiclesService.create(body);
+  }
+
+  @Get()
+  showAllVehicles(@Paginate() query: PaginateQuery) {
+    return this.vehiclesService.showAll(query);
   }
 }
