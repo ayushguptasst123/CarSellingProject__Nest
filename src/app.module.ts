@@ -3,10 +3,9 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { ReportsModule } from './reports/reports.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { Report } from './reports/report.entity';
-// import { ConfigModule } from '@nestjs/config';
+import { dataSourceOptions } from './database/data-source';
 
 @Module({
   imports: [
@@ -24,16 +23,11 @@ import { Report } from './reports/report.entity';
     // Use ConfigService through the DI
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
-      // Below line is DI part
-      useFactory: (config: ConfigService) => {
-        return {
-          type: 'sqlite',
-          database: config.get<string>('DB_NAME'),
-          synchronize: false,
+      useFactory: () =>
+        ({
+          ...dataSourceOptions,
           autoLoadEntities: true,
-          // entities: [User, Report], //AUTOLOAD:true will automatically fetch db
-        };
-      },
+        }) as TypeOrmModuleOptions,
     }),
 
     /*==== NOTICE THE `ASYNC`/* ====
