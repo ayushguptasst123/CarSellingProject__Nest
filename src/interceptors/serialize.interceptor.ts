@@ -4,32 +4,63 @@ import {
   NestInterceptor,
   UseInterceptors,
 } from '@nestjs/common';
-import { plainToClass } from 'class-transformer';
-import { map, Observable } from 'rxjs';
+import { plainToInstance } from 'class-transformer';
+import { Response } from 'express';
+import { catchError, map, Observable } from 'rxjs';
 
-// This is the helper method to restrict user to enter only class value to the param
 interface ClassConstructor {
-  new (...args: any[]): {};
+  new (...args: any[]): any;
 }
 
 export function Serialize(dto: ClassConstructor) {
-  return UseInterceptors(new SerializerInterceptor(dto));
+  return UseInterceptors(new SerializeInterceptor(dto));
 }
 
-// The implementation of NestInterceptor is optional
-class SerializerInterceptor implements NestInterceptor {
+class SerializeInterceptor implements NestInterceptor {
   constructor(private dto: any) {}
 
-  // This method is called automatically
   intercept(
-    context: ExecutionContext, //Inform on the incoming request
-    handler: CallHandler<any>, //kind of a reference to the request handler in our controller
+    context: ExecutionContext,
+    next: CallHandler<any>,
   ): Observable<any> {
-    return handler.handle().pipe(
-      map((data: any) => {
-        return plainToClass(this.dto, data, {
-          excludeExtraneousValues: true,
-        });
+    return next.handle().pipe(
+      map((data: unknown) => {
+        if (!this.dto) return data;
+
+        console.log(`Running before the response send back`);
+        const response = context.switchToHttp().getResponse<Response>();
+
+        // Handle pagination response structure
+        if (
+          data &&
+          typeof data === 'object' &&
+          'data' in data &&
+          Array.isArray(data.data)
+        ) {
+          return {
+            success: true,
+            statusCode: response.statusCode.toString(),
+            payload: {
+              ...data,
+              data: plainToInstance(this.dto, data.data, {
+                excludeExtraneousValues: true,
+              }),
+            },
+          };
+        }
+
+        // Handle single object or array response
+        return {
+          success: true,
+          statusCode: response.statusCode.toString(),
+          payload: plainToInstance(this.dto, data, {
+            excludeExtraneousValues: true,
+          }),
+        };
+      }),
+      catchError((err) => {
+        console.log('executed');
+        throw err;
       }),
     );
   }

@@ -3,59 +3,117 @@ import {
   Controller,
   Delete,
   Get,
-  NotFoundException,
+  HttpCode,
   Param,
   Patch,
   Post,
+  Query,
+  Session,
 } from '@nestjs/common';
-import { CreateUserDto } from './dtos/create.user.dto';
+import { CreateUserDto } from './dtos/create-user.dto';
 import { UsersService } from './users.service';
-import { UpdateUserDto } from './dtos/update.user.dto';
+import { UpdateUserDto } from './dtos/update-user.dto';
 import { Serialize } from 'src/interceptors/serialize.interceptor';
 import { UserDto } from './dtos/user.dto';
 import { AuthService } from './auth.service';
-import { SigninDto } from './dtos/signin.dto';
+import { CurrentUser } from './decorators/current-user.decorator';
+import { User } from './user.entity';
+import { Request } from 'express';
 
-@Serialize(UserDto)
+interface UserCreation extends Request {
+  userId?: number;
+}
+
 @Controller('auth')
+@Serialize(UserDto)
 export class UsersController {
   constructor(
-    private userService: UsersService,
+    private usersService: UsersService,
     private authService: AuthService,
   ) {}
 
-  @Get('/:id')
-  async findUser(@Param('id') id: string) {
-    console.log('Handler is running');
-    const user = await this.userService.findOne(id);
-    if (!user) throw new NotFoundException('user not found');
+  // @Get('/colors/:color')
+  // setColor(@Param('color') color: string, @Session() session: any) {
+  //   session.color = color;
+  // }
+
+  // @Get('/colors')
+  // getColor(@Session() session: any) {
+  //   return session.color;
+  // }
+
+  // @Get('/whoami')
+  // whoAmI(@Session() session: any) {
+  //   return this.usersService.findOne(session.userId);
+  // }
+
+  @Get('whoami')
+  // @UseGuards(AuthGuard)
+  whoAmI(@CurrentUser() user: User) {
     return user;
   }
 
-  @Get()
-  findAllUsers() {
-    return this.userService.find();
+  @Patch()
+  modifyUser(@CurrentUser() user: User, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.modifyViaLogin(user, updateUserDto);
   }
 
   @Post('/signup')
-  createUser(@Body() body: CreateUserDto) {
-    console.log(body);
-    return this.authService.signup(body.email, body.password, body.gender);
+  async createUser(
+    @Body() createUserDto: CreateUserDto,
+    @Session() session: UserCreation,
+  ) {
+    const user = await this.authService.signUp(
+      createUserDto.email,
+      createUserDto.password,
+    );
+
+    session.userId = user.id;
+    return user;
   }
 
   @Post('/signin')
-  verifyUser(@Body() body: SigninDto) {
-    console.log(body);
-    return this.authService.signin(body.email, body.password);
+  @HttpCode(200)
+  async signIn(
+    @Body() createUserDto: CreateUserDto,
+    @Session() session: UserCreation,
+  ) {
+    const user = await this.authService.signIn(
+      createUserDto.email,
+      createUserDto.password,
+    );
+    session.userId = user.id;
+    return user;
+  }
+
+  @Post('signout')
+  signOut(@Session() session: UserCreation) {
+    session.userId = undefined;
+  }
+
+  @Get(':id')
+  findOneUser(@Param('id') id: string) {
+    console.log('Handler is running');
+    return this.usersService.findOne(Number(id));
+  }
+
+  @Get()
+  findAllUsers(@Query('email') email: string) {
+    return this.usersService.find(email);
   }
 
   @Patch('/:id')
-  updateUser(@Param('id') id: string, @Body() data: UpdateUserDto) {
-    return this.userService.update(id, data);
+  updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.update(parseInt(id), updateUserDto);
   }
 
-  @Delete('/:id')
-  deleteUser(@Param('id') id: string) {
-    return this.userService.remove(id);
+  @Delete(':id')
+  removeUser(@Param('id') id: number) {
+    return this.usersService.remove(id);
+  }
+
+  @Delete('')
+  deleteUser(@Query('email') email: string) {
+    return this.usersService.delete(email);
   }
 }

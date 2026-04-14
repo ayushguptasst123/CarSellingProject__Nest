@@ -1,3 +1,4 @@
 {
-  "cSpell.words": ["dtos"]
+  "cSpell.words": ["dtos"],
+  "js/ts.tsdk.path": "node_modules\\typescript\\lib"
 }

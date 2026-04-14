@@ -1,19 +1,18 @@
+// import { Report } from 'src/reports/report.entity';
+import { Report } from '../reports/report.entity';
 import {
   AfterInsert,
   AfterRemove,
   AfterUpdate,
+  BeforeInsert,
   Column,
+  CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-export enum Gender {
-  MALE,
-  FEMALE,
-  TRANS,
-}
-
-@Entity()
+@Entity('users')
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -24,22 +23,34 @@ export class User {
   @Column()
   password: string;
 
-  @Column({ default: 'MALE' })
-  gender: Gender;
+  @Column({ default: true })
+  admin: boolean;
 
-  // This is hook decorator
+  @Column({ default: false })
+  isVerified: boolean;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @OneToMany(() => Report, (report) => report.user)
+  reports: Report[];
+
+  @BeforeInsert()
+  logBeforeInsert() {
+    console.log(`Before Inserted password is ${this.password} `);
+  }
+
   @AfterInsert()
   logInsert() {
-    console.log(`Inserted User with id: ${this.id}`);
+    console.log(`After Inserted password is ${this.password} `);
   }
 
   @AfterUpdate()
   logUpdate() {
-    console.log(`User with id: ${this.id} is updated`);
+    console.log(`Update User with id: ${this.id}`);
   }
-
   @AfterRemove()
   logRemove() {
-    console.log(`User with id: ${this.id} is removed Successfully`);
+    console.log(`Removed User with id: ${this.id}`);
   }
 }
