@@ -1,5 +1,4 @@
-// import { Report } from 'src/reports/report.entity';
-import { Report } from '../reports/report.entity';
+import { Report } from '../../reports/report.entity';
 import {
   AfterInsert,
   AfterRemove,
@@ -11,6 +10,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { OAuthAccessToken } from './oauth-access-token.entity';
 
 @Entity('users')
 export class User {
@@ -34,6 +34,9 @@ export class User {
 
   @OneToMany(() => Report, (report) => report.user)
   reports: Report[];
+
+  @OneToMany(() => OAuthAccessToken, (token) => token.user)
+  accessTokens: OAuthAccessToken[];
 
   @BeforeInsert()
   logBeforeInsert() {

@@ -13,11 +13,12 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     });
   }
 
+  // This method is called by passport.js
   async validate(email: string, password: string) {
-    console.log(email, password);
     const user = await this.authService.validateUser(email, password);
-    console.log(user);
+
     if (!user) throw new UnauthorizedException();
+    user.password = password;
     return user;
   }
 }

@@ -51,16 +51,20 @@ export class AuthService {
     const hash = (await myScrypt(password, salt, 32)) as Buffer;
 
     if (storedHash !== hash.toString('hex'))
-      throw new BadRequestException('Incorrect Password');
+      throw new BadRequestException('Invalid Credentials');
 
     const tokenPayload = {
       sub: user.id,
       email: user.email,
+      // random UUID
     };
 
     const accessToken = await this.jwtService.signAsync(tokenPayload);
-    console.log(accessToken);
-    return { accessToken, ...user };
+
+    return {
+      access_token: accessToken,
+      ...user,
+    };
   }
 
   async validateUser(email: string, password: string) {

@@ -3,45 +3,44 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  NotImplementedException,
   Post,
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { Serialize } from 'src/interceptors/serialize.interceptor';
-import { UserDto } from './dtos/user.dto';
 import { AuthService } from './auth.service';
 import { PassportLocalGuard } from 'src/guards/passport-local.guard';
-import { User } from './user.entity';
-import { JwtService } from '@nestjs/jwt';
+import { JwtGuard } from 'src/guards/jwt.guard';
+import { User } from './entities/user.entity';
 
 interface AuthRequest {
   user: User;
 }
 
 @Controller('passport-auth')
-@Serialize(UserDto)
+// @Serialize(UserDto)
 export class PassportAuthController {
-  constructor(
-    private authService: AuthService,
-    private jwtService: JwtService,
-  ) {}
+  constructor(private authService: AuthService) {}
 
   @HttpCode(HttpStatus.OK)
   @Post('login')
   @UseGuards(PassportLocalGuard)
   async login(@Req() request: AuthRequest) {
-    const tokenPayload = {
-      sub: request.user.id,
-      email: request.user.email,
-    };
-
-    const accessToken = await this.jwtService.signAsync(tokenPayload);
-    return { accessToken, ...request.user };
+    const accessToken = await this.authService.signIn(
+      request.user.email,
+      request.user.password,
+    );
+    return accessToken;
   }
 
   @Get('me')
-  getUserInfo() {
-    throw new NotImplementedException();
+  @UseGuards(JwtGuard)
+  getUserInfo(@Req() request: AuthRequest) {
+    console.log(request.user);
+    return request.user;
   }
+
+  //   @Get('logout')
+  //   logOutUser(@Req() request: AuthRequest) {
+
+  //   }
 }
