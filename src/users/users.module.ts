@@ -11,6 +11,7 @@ import { PassportModule } from '@nestjs/passport';
 import { PassportAuthController } from './passport-auth.controller';
 import { LocalStrategy } from './strategies/local.strategy';
 import { User } from './entities/user.entity';
+import { OauthAccessTokensModule } from 'src/oauth-access-tokens/oauth-access-tokens.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { User } from './entities/user.entity';
       }),
     }),
     PassportModule,
+    OauthAccessTokensModule,
   ],
   controllers: [UsersController, PassportAuthController],
   providers: [

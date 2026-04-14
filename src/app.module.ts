@@ -7,6 +7,7 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { dataSourceOptions } from './database/data-source';
 import { VehiclesModule } from './vehicles/vehicles.module';
+import { OauthAccessTokensModule } from './oauth-access-tokens/oauth-access-tokens.module';
 
 @Module({
   imports: [
@@ -33,6 +34,8 @@ import { VehiclesModule } from './vehicles/vehicles.module';
     }),
 
     VehiclesModule,
+
+    OauthAccessTokensModule,
 
     /*==== NOTICE THE `ASYNC`/* ====
     TypeOrmModule.forRoot({

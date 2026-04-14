@@ -10,7 +10,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { OAuthAccessToken } from './oauth-access-token.entity';
+import { OAuthAccessToken } from '../../oauth-access-tokens/oauth-access-token.entity';
 
 @Entity('users')
 export class User {

@@ -7,7 +7,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { User } from './user.entity';
+import { User } from '../users/entities/user.entity';
 
 @Entity('oauth_access_tokens')
 export class OAuthAccessToken {

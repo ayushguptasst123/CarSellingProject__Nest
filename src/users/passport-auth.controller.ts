@@ -11,13 +11,15 @@ import { AuthService } from './auth.service';
 import { PassportLocalGuard } from 'src/guards/passport-local.guard';
 import { JwtGuard } from 'src/guards/jwt.guard';
 import { User } from './entities/user.entity';
+import { Serialize } from 'src/interceptors/serialize.interceptor';
+import { UserDto } from './dtos/user.dto';
 
 interface AuthRequest {
   user: User;
 }
 
 @Controller('passport-auth')
-// @Serialize(UserDto)
+@Serialize(UserDto)
 export class PassportAuthController {
   constructor(private authService: AuthService) {}
 
