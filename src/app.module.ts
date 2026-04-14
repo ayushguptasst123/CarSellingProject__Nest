@@ -10,8 +10,6 @@ import { VehiclesModule } from './vehicles/vehicles.module';
 
 @Module({
   imports: [
-    UsersModule,
-    ReportsModule,
     ConfigModule.forRoot({
       isGlobal: true, // Give access of `.env` to all file present in this project
 
@@ -20,6 +18,9 @@ import { VehiclesModule } from './vehicles/vehicles.module';
       // If we are in development evn then `NODE_ENV` point to development
       // If we are in test evn then `NODE_ENV` point to test
     }),
+
+    UsersModule,
+    ReportsModule,
 
     // Use ConfigService through the DI
     TypeOrmModule.forRootAsync({
