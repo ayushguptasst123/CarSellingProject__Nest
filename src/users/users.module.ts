@@ -7,6 +7,10 @@ import { AuthService } from './auth.service';
 import { CurrentUserMiddleware } from './middlewares/current-user.middleware';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtGuard } from 'src/guards/jwt.guard';
+import { PassportModule } from '@nestjs/passport';
+import { PassportAuthController } from './passport-auth.controller';
+import { LocalStrategy } from './strategies/local.strategy';
 
 @Module({
   imports: [
@@ -27,11 +31,14 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         signOptions: { expiresIn: '1d' },
       }),
     }),
+    PassportModule,
   ],
-  controllers: [UsersController],
+  controllers: [UsersController, PassportAuthController],
   providers: [
     UsersService,
     AuthService,
+    LocalStrategy,
+    JwtGuard,
     // Set globally Scoped Interceptor
     // {
     //   provide: APP_INTERCEPTOR,

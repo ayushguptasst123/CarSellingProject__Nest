@@ -62,4 +62,22 @@ export class AuthService {
     console.log(accessToken);
     return { accessToken, ...user };
   }
+
+  async validateUser(email: string, password: string) {
+    const [user] = await this.userService.find(email);
+    if (!user) {
+      throw new NotFoundException('No User Found');
+    }
+
+    const hashedPassword = user.password;
+
+    const [salt, storedHash] = hashedPassword.split('.');
+
+    const hash = (await myScrypt(password, salt, 32)) as Buffer;
+
+    if (storedHash !== hash.toString('hex'))
+      throw new BadRequestException('Invalid Credentials');
+
+    return user;
+  }
 }

@@ -8,7 +8,9 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   Session,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UsersService } from './users.service';
@@ -18,9 +20,10 @@ import { UserDto } from './dtos/user.dto';
 import { AuthService } from './auth.service';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { User } from './user.entity';
-import { Request } from 'express';
+import { JwtGuard } from 'src/guards/jwt.guard';
+import type { Request } from 'express';
 
-interface UserCreation extends Request {
+interface SessionData {
   userId?: number;
 }
 
@@ -33,9 +36,9 @@ export class UsersController {
   ) {}
 
   @Get('whoami')
-  // @UseGuards(AuthGuard)
-  whoAmI(@CurrentUser() user: User) {
-    return user;
+  @UseGuards(JwtGuard)
+  whoAmI(@Req() request: Request) {
+    return request.user;
   }
 
   @Patch()
@@ -46,7 +49,7 @@ export class UsersController {
   @Post('/signup')
   async createUser(
     @Body() createUserDto: CreateUserDto,
-    @Session() session: UserCreation,
+    @Session() session: SessionData,
   ) {
     const user = await this.authService.signUp(
       createUserDto.email,
@@ -61,7 +64,7 @@ export class UsersController {
   @HttpCode(200)
   async signIn(
     @Body() createUserDto: CreateUserDto,
-    @Session() session: UserCreation,
+    @Session() session: SessionData,
   ) {
     const user = await this.authService.signIn(
       createUserDto.email,
@@ -72,7 +75,7 @@ export class UsersController {
   }
 
   @Post('signout')
-  signOut(@Session() session: UserCreation) {
+  signOut(@Session() session: SessionData) {
     session.userId = undefined;
   }
 
