@@ -28,7 +28,7 @@ export class OauthAccessTokensService {
     return this.repo.save(accessToken);
   }
 
-  async generateJwtToken(user: User) {
+  async generateJwtToken(user: User): Promise<string> {
     const tokenId = randomUUID();
     const expiresTime = this.configService.getOrThrow<string>(
       'JWT_EXPIRY',
@@ -53,16 +53,16 @@ export class OauthAccessTokensService {
     return accessToken;
   }
 
-  async verifyToken(tokenId: string) {
+  async verifyToken(tokenId: string): Promise<boolean> {
     const token = await this.findTokenById(tokenId);
     if (token?.revoked) throw new UnauthorizedException();
     if (!token || token.expiresAt.getTime() < Date.now()) {
       throw new UnauthorizedException();
     }
-    return token.tokenId;
+    return true;
   }
 
-  async findTokenById(tokenId: string) {
+  async findTokenById(tokenId: string): Promise<OAuthAccessToken | null> {
     return this.repo.findOne({
       where: { tokenId },
       relations: { user: true },
@@ -73,7 +73,7 @@ export class OauthAccessTokensService {
     return this.jwtService.verifyAsync<JwtPayload>(token);
   }
 
-  async disableToken(jwtToken: string, user: User) {
+  async disableToken(jwtToken: string, user: User): Promise<OAuthAccessToken> {
     const payload = await this.findPayloadByToken(jwtToken);
 
     if (!payload) throw new UnauthorizedException();

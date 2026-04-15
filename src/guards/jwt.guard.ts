@@ -18,7 +18,6 @@ declare module 'express' {
 
 interface JwtPayload {
   sub: number;
-  email: string;
 }
 
 @Injectable()
@@ -29,7 +28,7 @@ export class JwtGuard implements CanActivate {
     private oauthAccessTokensService: OauthAccessTokensService,
   ) {}
 
-  async canActivate(context: ExecutionContext) {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
     const authorization = request.headers.authorization;
 
@@ -40,18 +39,15 @@ export class JwtGuard implements CanActivate {
 
     try {
       const tokenPayload = await this.jwtService.verifyAsync<JwtPayload>(token);
-      console.log('===========', tokenPayload);
 
-      const tokenId = await this.oauthAccessTokensService.verifyToken(
+      const isVerified = await this.oauthAccessTokensService.verifyToken(
         tokenPayload['tokenId'],
       );
 
-      if (!tokenId) throw new UnauthorizedException();
       const user = await this.userService.findById(tokenPayload.sub);
-      if (!user) throw new UnauthorizedException();
+      if (!isVerified || !user) throw new UnauthorizedException();
 
-      // CHECK OUT THIS
-      request['user'] = user;
+      request.user = user;
 
       return true;
     } catch (error) {
