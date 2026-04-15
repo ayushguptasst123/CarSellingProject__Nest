@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
+import { OauthAccessTokensService } from 'src/oauth-access-tokens/oauth-access-tokens.service';
 import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 
@@ -25,6 +26,7 @@ export class JwtGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
     private userService: UsersService,
+    private oauthAccessTokensService: OauthAccessTokensService,
   ) {}
 
   async canActivate(context: ExecutionContext) {
@@ -39,10 +41,16 @@ export class JwtGuard implements CanActivate {
     try {
       const tokenPayload = await this.jwtService.verifyAsync<JwtPayload>(token);
 
+      const tokenId = await this.oauthAccessTokensService.verifyToken(
+        tokenPayload['tokenId'],
+      );
+
+      if (!tokenId) throw new UnauthorizedException();
       const user = await this.userService.findById(tokenPayload.sub);
       if (!user) throw new UnauthorizedException();
 
       request['user'] = user;
+      request['tokenId'] = tokenId;
 
       return true;
     } catch (error) {

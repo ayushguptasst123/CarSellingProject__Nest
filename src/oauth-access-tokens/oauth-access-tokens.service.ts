@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { OAuthAccessToken } from './oauth-access-token.entity';
 import { Repository } from 'typeorm';
@@ -48,5 +48,32 @@ export class OauthAccessTokensService {
     const accessToken = await this.jwtService.signAsync(tokenPayload);
 
     return accessToken;
+  }
+
+  async findTokenById(tokenId: string) {
+    return await this.repo.findOne({
+      where: { tokenId },
+      relations: {
+        user: true,
+      },
+    });
+  }
+
+  async verifyToken(tokenId: string) {
+    const token = await this.findTokenById(tokenId);
+    if (token?.revoked) throw new UnauthorizedException();
+    if (!token || token.expiresAt.getTime() < Date.now()) {
+      throw new UnauthorizedException();
+    }
+    return token.tokenId;
+  }
+
+  async disableToken(tokenId: string, user: User) {
+    const token = await this.findTokenById(tokenId);
+    if (!token) throw new UnauthorizedException();
+    if (token.user.id !== user.id) throw new UnauthorizedException();
+    token.revoked = true;
+    token.revokedAt = new Date();
+    return this.repo.save(token);
   }
 }
