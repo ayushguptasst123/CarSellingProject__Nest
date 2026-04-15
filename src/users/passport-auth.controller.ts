@@ -26,12 +26,9 @@ export class PassportAuthController {
   @HttpCode(HttpStatus.OK)
   @Post('login')
   @UseGuards(PassportLocalGuard)
-  async login(@Req() request: AuthRequest) {
-    const accessToken = await this.authService.signIn(
-      request.user.email,
-      request.user.password,
-    );
-    return accessToken;
+  login(@Req() request: AuthRequest) {
+    console.log(request.user);
+    return request.user;
   }
 
   @Get('me')
@@ -40,9 +37,4 @@ export class PassportAuthController {
     console.log(request.user);
     return request.user;
   }
-
-  //   @Get('logout')
-  //   logOutUser(@Req() request: AuthRequest) {
-
-  //   }
 }

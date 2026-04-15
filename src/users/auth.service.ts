@@ -19,7 +19,7 @@ export class AuthService {
 
   async signUp(email: string, password: string) {
     const user = await this.userService.find(email);
-    if (user.length) {
+    if (user) {
       throw new BadRequestException('Email in use');
     }
 
@@ -39,7 +39,7 @@ export class AuthService {
   }
 
   async signIn(email: string, password: string) {
-    const [user] = await this.userService.find(email);
+    const user = await this.userService.find(email);
     if (!user) {
       throw new NotFoundException('No User Found');
     }
@@ -55,7 +55,6 @@ export class AuthService {
 
     const tokenPayload = {
       sub: user.id,
-      email: user.email,
       // random UUID
     };
 
@@ -68,9 +67,9 @@ export class AuthService {
   }
 
   async validateUser(email: string, password: string) {
-    const [user] = await this.userService.find(email);
+    const user = await this.userService.find(email);
     if (!user) {
-      throw new NotFoundException('No User Found');
+      throw new BadRequestException('Invalid Credentials');
     }
 
     const hashedPassword = user.password;

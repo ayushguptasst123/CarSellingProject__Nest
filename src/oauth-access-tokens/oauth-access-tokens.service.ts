@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { OAuthAccessToken } from './oauth-access-token.entity';
 import { Repository } from 'typeorm';
-import { CreateAccessTokenDto } from './dtos/create.auth-token.dto';
+import { CreateAccessTokenDto } from './dtos/create-auth-token.dto';
 
 @Injectable()
 export class OauthAccessTokensService {

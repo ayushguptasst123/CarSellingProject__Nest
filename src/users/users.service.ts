@@ -35,8 +35,12 @@ export class UsersService {
     return user;
   }
 
+  findById(id: number) {
+    return this.repo.findOne({ where: { id } });
+  }
+
   find(email: string) {
-    return this.repo.find({ where: { email: email } });
+    return this.repo.findOne({ where: { email: email } });
   }
 
   modifyViaLogin(user: User, updateUserDto: UpdateUserDto) {
