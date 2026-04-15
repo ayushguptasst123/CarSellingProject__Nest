@@ -8,6 +8,10 @@ import { randomUUID } from 'crypto';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import ms, { StringValue } from 'ms';
+type JwtPayload = {
+  sub: string;
+  tokenId: string;
+};
 
 @Injectable()
 export class OauthAccessTokensService {
@@ -31,6 +35,12 @@ export class OauthAccessTokensService {
     ) as StringValue;
     const expiresAt = new Date(Date.now() + ms(expiresTime));
 
+    const tokenPayload = {
+      sub: user.id,
+      tokenId,
+    };
+
+    const accessToken = await this.jwtService.signAsync(tokenPayload);
     const createAccessTokenDto: CreateAccessTokenDto = {
       user,
       tokenId,
@@ -40,23 +50,7 @@ export class OauthAccessTokensService {
     // Save access token to database
     await this.saveAccessToken(createAccessTokenDto);
 
-    const tokenPayload = {
-      sub: user.id,
-      tokenId,
-    };
-
-    const accessToken = await this.jwtService.signAsync(tokenPayload);
-
     return accessToken;
-  }
-
-  async findTokenById(tokenId: string) {
-    return await this.repo.findOne({
-      where: { tokenId },
-      relations: {
-        user: true,
-      },
-    });
   }
 
   async verifyToken(tokenId: string) {
@@ -68,12 +62,31 @@ export class OauthAccessTokensService {
     return token.tokenId;
   }
 
-  async disableToken(tokenId: string, user: User) {
-    const token = await this.findTokenById(tokenId);
-    if (!token) throw new UnauthorizedException();
-    if (token.user.id !== user.id) throw new UnauthorizedException();
+  async findTokenById(tokenId: string) {
+    return this.repo.findOne({
+      where: { tokenId },
+      relations: { user: true },
+    });
+  }
+
+  async findPayloadByToken(token: string): Promise<JwtPayload> {
+    return this.jwtService.verifyAsync<JwtPayload>(token);
+  }
+
+  async disableToken(jwtToken: string, user: User) {
+    const payload = await this.findPayloadByToken(jwtToken);
+
+    if (!payload) throw new UnauthorizedException();
+
+    const token = await this.findTokenById(payload.tokenId);
+
+    if (!token || token.user.id !== user.id) {
+      throw new UnauthorizedException();
+    }
+
     token.revoked = true;
     token.revokedAt = new Date();
+
     return this.repo.save(token);
   }
 }

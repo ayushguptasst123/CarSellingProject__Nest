@@ -5,6 +5,7 @@ import {
   HttpStatus,
   Post,
   Req,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { PassportLocalGuard } from 'src/guards/passport-local.guard';
@@ -13,6 +14,7 @@ import { User } from './entities/user.entity';
 import { Serialize } from 'src/interceptors/serialize.interceptor';
 import { UserDto } from './dtos/user.dto';
 import { OauthAccessTokensService } from 'src/oauth-access-tokens/oauth-access-tokens.service';
+import type { Request } from 'express';
 
 interface AuthRequest {
   user: User;
@@ -39,12 +41,19 @@ export class PassportAuthController {
     return request.user;
   }
 
+  @Get('greeting')
+  @UseGuards(JwtGuard)
+  greeting() {
+    return {
+      greeting: 'Hello world',
+    };
+  }
+
   @Get('logout')
   @UseGuards(JwtGuard)
-  logoutUser(@Req() request: AuthRequest) {
-    return this.oauthAccessTokensService.disableToken(
-      request.tokenId,
-      request.user,
-    );
+  logoutUser(@Req() request: Request) {
+    const header = request.headers.authorization?.split(' ')[1];
+    if (!header) throw new UnauthorizedException();
+    return this.oauthAccessTokensService.disableToken(header, request.user);
   }
 }

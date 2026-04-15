@@ -40,6 +40,7 @@ export class JwtGuard implements CanActivate {
 
     try {
       const tokenPayload = await this.jwtService.verifyAsync<JwtPayload>(token);
+      console.log('===========', tokenPayload);
 
       const tokenId = await this.oauthAccessTokensService.verifyToken(
         tokenPayload['tokenId'],
@@ -49,8 +50,8 @@ export class JwtGuard implements CanActivate {
       const user = await this.userService.findById(tokenPayload.sub);
       if (!user) throw new UnauthorizedException();
 
+      // CHECK OUT THIS
       request['user'] = user;
-      request['tokenId'] = tokenId;
 
       return true;
     } catch (error) {
