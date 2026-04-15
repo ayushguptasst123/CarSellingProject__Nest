@@ -6,7 +6,7 @@ import {
 import { UsersService } from './users.service';
 import { promisify } from 'util';
 import { randomBytes, scrypt } from 'crypto';
-import { JwtService } from '@nestjs/jwt';
+import { OauthAccessTokensService } from 'src/oauth-access-tokens/oauth-access-tokens.service';
 
 const myScrypt = promisify(scrypt);
 
@@ -14,7 +14,7 @@ const myScrypt = promisify(scrypt);
 export class AuthService {
   constructor(
     private userService: UsersService,
-    private jwtService: JwtService,
+    private oauthAccessTokensService: OauthAccessTokensService,
   ) {}
 
   async signUp(email: string, password: string) {
@@ -53,15 +53,13 @@ export class AuthService {
     if (storedHash !== hash.toString('hex'))
       throw new BadRequestException('Invalid Credentials');
 
-    const tokenPayload = {
-      sub: user.id,
-      // random UUID
-    };
-
-    const accessToken = await this.jwtService.signAsync(tokenPayload);
+    // const accessTokenDto = new CreateAccessTokenDto();
+    // accessToken.user = user;
+    const accessToken =
+      await this.oauthAccessTokensService.generateJwtToken(user);
 
     return {
-      accessToken: accessToken,
+      accessToken,
       ...user,
     };
   }

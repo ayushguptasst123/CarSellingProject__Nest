@@ -12,6 +12,7 @@ import { PassportAuthController } from './passport-auth.controller';
 import { LocalStrategy } from './strategies/local.strategy';
 import { User } from './entities/user.entity';
 import { OauthAccessTokensModule } from 'src/oauth-access-tokens/oauth-access-tokens.module';
+import { StringValue } from 'ms';
 
 @Module({
   imports: [
@@ -28,8 +29,11 @@ import { OauthAccessTokensModule } from 'src/oauth-access-tokens/oauth-access-to
       inject: [ConfigService],
       global: true,
       useFactory: (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: '1d' },
+        secret: configService.getOrThrow<string>('JWT_SECRET'),
+        signOptions: {
+          expiresIn: (configService.getOrThrow<string>('JWT_EXPIRY') ||
+            '6m') as StringValue,
+        },
       }),
     }),
     PassportModule,
