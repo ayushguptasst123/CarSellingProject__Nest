@@ -10,6 +10,7 @@ import { JwtGuard } from 'src/guards/jwt.guard';
 import { PassportModule } from '@nestjs/passport';
 import { PassportAuthController } from './passport-auth.controller';
 import { LocalStrategy } from './strategies/local.strategy';
+import { JwtStrategy } from './strategies/jwt.stratergy';
 import { User } from './entities/user.entity';
 import { OauthAccessTokensModule } from 'src/oauth-access-tokens/oauth-access-tokens.module';
 import { StringValue } from 'ms';
@@ -44,6 +45,7 @@ import { StringValue } from 'ms';
     UsersService,
     AuthService,
     LocalStrategy,
+    JwtStrategy,
     JwtGuard,
     // Set globally Scoped Interceptor
     // {
